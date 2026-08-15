@@ -218,6 +218,7 @@ pub struct FlowStats {
   tcp_syn : Int
   tcp_fin : Int
   tcp_rst : Int
+  last_tcp_sequence : Int
   tcp_retransmissions : Int
 } derive(Debug, Eq)
 
