@@ -1,0 +1,24 @@
+name: MoonPCAP CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: moonbitlang/setup-moonbit@v1
+      - name: Format check
+        run: moon fmt --check
+      - name: Run tests
+        run: moon test
+      - name: Run CLI smoke tests
+        run: |
+          moon run cmd/main -- summary
+          moon run cmd/main -- flows
+          moon run cmd/main -- dns
+          moon run cmd/main -- filter
+          moon run cmd/main -- export json
+          moon run cmd/main -- export csv
