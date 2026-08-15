@@ -120,6 +120,24 @@ pub fn protocol_name(protocol : Int) -> String {
 }
 
 ///|
+pub fn imax(a : Int, b : Int) -> Int {
+  if a > b {
+    a
+  } else {
+    b
+  }
+}
+
+///|
+pub fn imin(a : Int, b : Int) -> Int {
+  if a < b {
+    a
+  } else {
+    b
+  }
+}
+
+///|
 pub fn ether_type_name(ether_type : Int) -> String {
   match ether_type {
     0x0800 => "ipv4"
