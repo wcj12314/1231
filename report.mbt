@@ -83,7 +83,8 @@ pub fn summary_to_text(summary : TrafficSummary) -> String {
   }
   buf.write_string("top ports:\n")
   for port in summary.top_ports {
-    buf.write_string("  \{port.name} \{port.count}\n")
+    let raw = port.name
+    buf.write_string("  \{raw} \{port.count}\n")
   }
   buf.to_string()
 }

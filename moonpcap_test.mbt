@@ -58,11 +58,11 @@ test "traffic summary and report exporters" {
   @test.assert_eq(summary.dns_messages, 1)
   @test.assert_eq(summary.flows.length(), 1)
   @test.assert_eq(summary.flows[0].packets, 1)
-  @test.assert_eq(summary.top_ports[0].name, "49153")
+  @test.assert_eq(summary.top_ports[0].name, "49153/dynamic-port-49153")
   let json = summary_to_json(summary)
   assert_true(json.contains("\"dns_messages\": 1"))
   let csv = flows_to_csv(summary.flows)
-  assert_true(csv.contains("192.168.0.2:49153"))
+  assert_true(csv.contains("192.168.0.2:49153/dynamic-port-49153"))
 }
 
 ///|

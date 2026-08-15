@@ -263,10 +263,18 @@ pub fn analyze_decoded_packets(
     add_counter(ips, packet.source_ip, 1)
     add_counter(ips, packet.destination_ip, 1)
     if packet.source_port > 0 {
-      add_counter(ports, "\{packet.source_port}", 1)
+      add_counter(
+        ports,
+        "\{packet.source_port}/\{registered_service_name(packet.source_port)}",
+        1,
+      )
     }
     if packet.destination_port > 0 {
-      add_counter(ports, "\{packet.destination_port}", 1)
+      add_counter(
+        ports,
+        "\{packet.destination_port}/\{registered_service_name(packet.destination_port)}",
+        1,
+      )
     }
     add_counter(lengths, length_bucket(packet.frame_length), 1)
     if packet.protocol == 6 || packet.protocol == 17 {
@@ -296,7 +304,7 @@ pub fn analyze_records(records : Array[PacketRecord]) -> TrafficSummary {
 
 ///|
 pub fn flow_label(key : FlowKey) -> String {
-  "\{key.source_ip}:\{key.source_port} -> \{key.destination_ip}:\{key.destination_port} \{protocol_name(key.protocol)}"
+  "\{key.source_ip}:\{key.source_port}/\{registered_service_name(key.source_port)} -> \{key.destination_ip}:\{key.destination_port}/\{registered_service_name(key.destination_port)} \{ip_protocol_registered_name(key.protocol)}"
 }
 
 ///|
