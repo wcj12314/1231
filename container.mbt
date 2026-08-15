@@ -9,31 +9,39 @@ pub fn parse_capture(data : Bytes) -> ParsedCapture raise ParseError {
       length=reader.length(),
     )
   }
-  let magic = reader.u32_be(0)
-  if magic == 0xa1b2c3d4 ||
-    magic == 0xd4c3b2a1 ||
-    magic == 0xa1b23c4d ||
-    magic == 0x4d3cb2a1 {
+  let b0 = reader.u8(0)
+  let b1 = reader.u8(1)
+  let b2 = reader.u8(2)
+  let b3 = reader.u8(3)
+  if (b0 == 0xa1 && b1 == 0xb2 && b2 == 0xc3 && b3 == 0xd4) ||
+    (b0 == 0xd4 && b1 == 0xc3 && b2 == 0xb2 && b3 == 0xa1) ||
+    (b0 == 0xa1 && b1 == 0xb2 && b2 == 0x3c && b3 == 0x4d) ||
+    (b0 == 0x4d && b1 == 0x3c && b2 == 0xb2 && b3 == 0xa1) {
     parse_pcap(data)
-  } else if magic == 0x0a0d0d0a {
+  } else if b0 == 0x0a && b1 == 0x0d && b2 == 0x0d && b3 == 0x0a {
     parse_pcapng(data)
   } else {
-    raise ParseError::InvalidMagic(
-      "unknown capture magic 0x\{byte_hex((magic >> 24) & 255)}\{byte_hex((magic >> 16) & 255)}\{byte_hex((magic >> 8) & 255)}\{byte_hex(magic & 255)}",
-    )
+    raise ParseError::InvalidMagic("unknown capture magic")
   }
 }
 
 ///|
 pub fn parse_pcap(data : Bytes) -> ParsedCapture raise ParseError {
   let probe = Reader::new(data)
-  let magic_be = probe.u32_be(0)
-  let (endian, nanos) = match magic_be {
-    0xa1b2c3d4 => (Big, false)
-    0xd4c3b2a1 => (Little, false)
-    0xa1b23c4d => (Big, true)
-    0x4d3cb2a1 => (Little, true)
-    _ => raise ParseError::InvalidMagic("not a classic pcap")
+  let b0 = probe.u8(0)
+  let b1 = probe.u8(1)
+  let b2 = probe.u8(2)
+  let b3 = probe.u8(3)
+  let (endian, nanos) = if b0 == 0xa1 && b1 == 0xb2 && b2 == 0xc3 && b3 == 0xd4 {
+    (Big, false)
+  } else if b0 == 0xd4 && b1 == 0xc3 && b2 == 0xb2 && b3 == 0xa1 {
+    (Little, false)
+  } else if b0 == 0xa1 && b1 == 0xb2 && b2 == 0x3c && b3 == 0x4d {
+    (Big, true)
+  } else if b0 == 0x4d && b1 == 0x3c && b2 == 0xb2 && b3 == 0xa1 {
+    (Little, true)
+  } else {
+    raise ParseError::InvalidMagic("not a classic pcap")
   }
   let reader = Reader::new(data, endian~)
   reader.ensure(0, 24, "pcap global header")

@@ -152,6 +152,17 @@ pub fn length_bucket(length : Int) -> String {
 }
 
 ///|
+pub fn packet_filter(
+  start_micros? : Int64? = None,
+  end_micros? : Int64? = None,
+  ip? : String? = None,
+  port? : Int? = None,
+  protocol? : Int? = None,
+) -> PacketFilter {
+  PacketFilter::{ start_micros, end_micros, ip, port, protocol }
+}
+
+///|
 pub fn filter_packet(packet : DecodedPacket, filter : PacketFilter) -> Bool {
   if filter.start_micros is Some(start) {
     if packet.timestamp_micros < start {
