@@ -1,0 +1,5 @@
+// import {
+//   "crh12354/moonpcap" @lib,
+// }
+
+pkgtype(kind: "executable")
