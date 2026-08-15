@@ -1,5 +1,6 @@
-// import {
-//   "crh12354/moonpcap" @lib,
-// }
+import {
+  "moonbitlang/core/env",
+  "wcj12314/1231" @pcap,
+}
 
 pkgtype(kind: "executable")

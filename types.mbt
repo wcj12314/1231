@@ -9,7 +9,6 @@ pub suberror ParseError {
   Truncated(context~ : String, offset~ : Int, needed~ : Int, length~ : Int)
   InvalidMagic(String)
   InvalidHeader(String)
-  Unsupported(String)
 }
 
 ///|
@@ -17,12 +16,6 @@ pub struct Reader {
   data : Bytes
   endian : Endian
 } derive(Debug)
-
-///|
-pub struct Slice {
-  offset : Int
-  length : Int
-} derive(Debug, Eq)
 
 ///|
 pub struct PcapHeader {
@@ -56,16 +49,6 @@ pub struct PcapNgSection {
 pub struct PcapNgInterface {
   link_type : Int
   snaplen : Int
-} derive(Debug, Eq)
-
-///|
-pub struct PcapNgPacket {
-  interface_id : Int
-  timestamp_high : Int
-  timestamp_low : Int
-  captured_length : Int
-  original_length : Int
-  payload : Bytes
 } derive(Debug, Eq)
 
 ///|
