@@ -24,7 +24,18 @@ fn main {
       let result = @guard.gate_capture(packets, policy_arg(args))
       println(@guard.gate_to_text(result))
       match result.verdict {
-        @guard.Fail => abort("MoonTraceGuard gate: FAIL")
+        @guard.Fail => abort("MoonFlowGuard gate: FAIL")
+        _ => ()
+      }
+    }
+    "gate-csv" => {
+      let result = @guard.gate_flow_csv(
+        @guard.sample_flow_csv_fixture(),
+        policy_arg(args),
+      )
+      println(@guard.gate_to_text(result))
+      match result.verdict {
+        @guard.Fail => abort("MoonFlowGuard gate-csv: FAIL")
         _ => ()
       }
     }
@@ -47,7 +58,7 @@ fn main {
     }
     _ =>
       println(
-        "MoonTraceGuard commands: summary | flows | dns | audit | gate [policy-json] | policy | filter | export [json|csv|audit]",
+        "MoonFlowGuard commands: summary | flows | dns | audit | gate [policy-json] | gate-csv [policy-json] | policy | filter | export [json|csv|audit]",
       )
   }
 }

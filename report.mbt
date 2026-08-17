@@ -67,7 +67,7 @@ pub fn flows_to_csv(flows : Array[FlowStats]) -> String {
 ///|
 pub fn summary_to_text(summary : TrafficSummary) -> String {
   let buf = StringBuilder()
-  buf.write_string("MoonTraceGuard summary\n")
+  buf.write_string("MoonFlowGuard summary\n")
   buf.write_string("packets: \{summary.packets}\n")
   buf.write_string("bytes: \{summary.bytes}\n")
   buf.write_string(

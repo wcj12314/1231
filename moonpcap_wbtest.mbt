@@ -120,6 +120,16 @@ fn has_rule(report : AuditReport, rule_id : String) -> Bool {
 }
 
 ///|
+fn has_finding(findings : Array[AuditFinding], rule_id : String) -> Bool {
+  for finding in findings {
+    if finding.rule_id == rule_id {
+      return true
+    }
+  }
+  false
+}
+
+///|
 test "gate passes a clean capture under default policy" {
   let result = gate_capture([synthetic_tcp(12345, 443, 0x02)], default_policy())
   assert_true(result.verdict is Pass)
@@ -206,4 +216,44 @@ test "dns tunnel shape rule flags deep name" {
   }
   let report = audit_decoded_packets([packet])
   assert_true(has_rule(report, "DNS-TUNNEL-SHAPE"))
+}
+
+///|
+test "parse flow csv into decoded packets" {
+  let packets = parse_flow_csv(sample_flow_csv_fixture())
+  @test.assert_eq(packets.length(), 2)
+  @test.assert_eq(packets[0].source_ip, "10.0.0.5")
+  @test.assert_eq(packets[0].destination_ip, "93.184.216.34")
+  @test.assert_eq(packets[0].protocol, 6)
+  @test.assert_eq(packets[0].source_port, 49152)
+  @test.assert_eq(packets[0].destination_port, 80)
+  @test.assert_eq(packets[0].tcp_flags, 24)
+  @test.assert_eq(packets[0].frame_length, 66)
+  @test.assert_eq(packets[1].destination_port, 25)
+}
+
+///|
+test "parse flow csv tolerates blank and malformed rows" {
+  let packets = parse_flow_csv(
+    "timestamp_micros,source_ip,destination_ip,protocol,source_port,destination_port,tcp_flags,frame_length\n\n1700000000000000,10.0.0.5,93.184.216.34,6,49152,80,24,66\nbad,row\n   \n",
+  )
+  @test.assert_eq(packets.length(), 1)
+  @test.assert_eq(packets[0].destination_port, 80)
+}
+
+///|
+test "gate passes the flow csv fixture under default policy" {
+  let result = gate_flow_csv(sample_flow_csv_fixture(), default_policy())
+  assert_true(result.verdict is Pass)
+  assert_true(has_finding(result.findings, "CLEARTEXT-SERVICE"))
+}
+
+///|
+test "gate fails on a csv flow to a sensitive service" {
+  let result = gate_flow_csv(
+    "timestamp_micros,source_ip,destination_ip,protocol,source_port,destination_port,tcp_flags,frame_length\n1700000000000000,10.0.0.5,192.168.0.10,6,49153,3306,24,66\n",
+    default_policy(),
+  )
+  assert_true(result.verdict is Fail)
+  assert_true(has_finding(result.findings, "SENSITIVE-SERVICE-EXPOSURE"))
 }

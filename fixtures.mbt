@@ -14,6 +14,20 @@ pub fn sample_pcap_fixture() -> Bytes {
 }
 
 ///|
+/// A flow-record table in MoonFlowGuard's CSV schema. Rows are: an HTTP flow
+/// (cleartext service -> Medium finding, passes the default policy) and a
+/// stray SMTP connection.
+pub fn sample_flow_csv_fixture() -> String {
+  let buf = StringBuilder()
+  buf.write_string(
+    "timestamp_micros,source_ip,destination_ip,protocol,source_port,destination_port,tcp_flags,frame_length\n",
+  )
+  buf.write_string("1700000000000000,10.0.0.5,93.184.216.34,6,49152,80,24,66\n")
+  buf.write_string("1700000000000100,10.0.0.5,198.51.100.20,6,49153,25,18,60\n")
+  buf.to_string()
+}
+
+///|
 pub fn sample_pcapng_fixture() -> Bytes {
   b"\x0A\x0D\x0D\x0A\x1C\x00\x00\x00\x4D\x3C\x2B\x1A\x01\x00\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x1C\x00\x00\x00\x01\x00\x00\x00\x14\x00\x00\x00\x01\x00\x00\x00\xFF\xFF\x00\x00\x14\x00\x00\x00\x06\x00\x00\x00\x24\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00\xDE\xAD\xBE\xEF\x24\x00\x00\x00"
 }

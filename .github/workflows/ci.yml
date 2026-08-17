@@ -1,4 +1,4 @@
-name: MoonTraceGuard CI
+name: MoonFlowGuard CI
 
 on:
   push:
@@ -21,6 +21,7 @@ jobs:
           moon run cmd/main -- dns
           moon run cmd/main -- audit
           moon run cmd/main -- gate
+          moon run cmd/main -- gate-csv
           moon run cmd/main -- policy
           moon run cmd/main -- filter
           moon run cmd/main -- export json
@@ -33,4 +34,10 @@ jobs:
             cat /tmp/gate.out
             exit 1
           fi
+          if moon run cmd/main -- gate-csv '{"max_risk_score": 0}' > /tmp/gatecsv.out 2>&1; then
+            echo "gate-csv unexpectedly passed for a strict policy"
+            cat /tmp/gatecsv.out
+            exit 1
+          fi
           cat /tmp/gate.out
+          cat /tmp/gatecsv.out

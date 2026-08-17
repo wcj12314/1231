@@ -9,18 +9,18 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "wcj12314/moon-trace-guard"
+name = "wcj12314/moon-flow-guard"
 
 version = "0.1.0"
 
 readme = "README.md"
 
-repository = "https://github.com/wcj12314/moon-trace-guard"
+repository = "https://github.com/wcj12314/moon-flow-guard"
 
 license = "Apache-2.0"
 
-keywords = [ "security", "audit", "gate", "pcap", "dns", "tcp", "moonbit" ]
+keywords = [ "security", "audit", "gate", "flow", "dns", "tcp", "moonbit" ]
 
 preferred_target = "wasm"
 
-description = "MoonTraceGuard: a MoonBit security audit and capture-quality gate for PCAP traffic, with policy-based PASS/FAIL verdicts, risk scoring and CI reports. Parsing is a built-in minimal capability for reproducible tests, not the deliverable."
+description = "MoonFlowGuard: a MoonBit traffic-flow security audit and policy gate with PASS/REVIEW/FAIL verdicts, risk scoring and CI reports. Inputs are flow records (CSV) or decoded traffic; PCAP reading is a small built-in capability for tests, not the deliverable."

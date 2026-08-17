@@ -255,7 +255,7 @@ pub fn audit_records(records : Array[PacketRecord]) -> AuditReport {
 ///|
 pub fn audit_to_text(report : AuditReport) -> String {
   let buf = StringBuilder()
-  buf.write_string("MoonTraceGuard audit\n")
+  buf.write_string("MoonFlowGuard audit\n")
   buf.write_string(
     "risk_score: \{report.risk_score}, high: \{report.high}, medium: \{report.medium}, low: \{report.low}, info: \{report.info}\n",
   )

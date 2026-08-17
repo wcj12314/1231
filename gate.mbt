@@ -150,7 +150,7 @@ pub fn gate_records(
 ///|
 pub fn gate_to_text(result : GateResult) -> String {
   let buf = StringBuilder()
-  buf.write_string("MoonTraceGuard gate: \{verdict_name(result.verdict)}\n")
+  buf.write_string("MoonFlowGuard gate: \{verdict_name(result.verdict)}\n")
   buf.write_string(
     "risk_score: \{result.risk_score}, high: \{result.high}, medium: \{result.medium}, low: \{result.low}, info: \{result.info}\n",
   )
