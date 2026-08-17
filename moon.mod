@@ -15,7 +15,7 @@ version = "0.1.0"
 
 readme = "README.md"
 
-repository = "https://github.com/wcj12314/moon-flow-guard"
+repository = "https://github.com/wcj12314/1231"
 
 license = "Apache-2.0"
 
