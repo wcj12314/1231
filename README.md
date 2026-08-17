@@ -16,13 +16,19 @@ tests and examples — it is **not** the identity of the project.
 
 That boundary is also the answer to why MoonFlowGuard does not duplicate the
 Mooncakes parsing ecosystem. `usagi-star/mooncap` (offline PCAP/PCAPNG parsing
-and protocol decoding), `chensuiyi/packet` (Ethernet/IP/TCP/UDP header parsing)
-and `chensuiyi/pcap` (capture bindings) answer *"what can be read out of a
-capture"*. MoonFlowGuard answers *"does this traffic pass the policy, which
+and protocol decoding), `chensuiyi/packet` (Ethernet/IP/TCP/UDP header parsing),
+`chensuiyi/pcap` (capture bindings), `oyjh0381/moonipfix` (IPFIX flow telemetry
+decoding) and `yhsrtty/moontls-parser` (TLS ClientHello parsing and JA3/JA4
+fingerprints) answer *"what can be read out of a capture or flow export"*. MoonFlowGuard answers *"does this traffic pass the policy, which
 security and quality risks does it carry, and how is the report exported"* —
 and is designed to consume those parsers as backends. A full sweep of the
 Mooncakes registry found **no project** doing policy-gated traffic security
-auditing.
+auditing. The one conceptually adjacent policy engine,
+`lllg123/moontrustflow`, is a Policy-as-Code toolkit for program data-flow
+(source-to-sink taint) governance over `.mtf` models — a different subject
+matter entirely, sharing only the generic "rules → findings → severity" shape.
+`vectie/moonflow` shares part of the name but is a Moon Suite orchestration
+engine.
 
 ## Features
 

@@ -39,8 +39,8 @@ MoonFlowGuard 使用 MoonBit 实现一个输入无关的流量安全审计与策
 
 代码规模说明（如实申报，按实测）：项目总行数约 8,100 行，其中 well-known 端口注册表约 5,700 行由 tools/generate_registry.ps1 脚本生成，属静态数据而非算法；解析与输入适配层（reader、protocols、container、flow_input）约 800 行；核心逻辑（解析与输入适配之外的 flow/analysis、audit、gate、report、cli）约 1,000 行。项目保留 11 次 GitHub 提交记录，提供可实际运行的测试、示例和文档。
 
-差异化结论：本项目与 mooncap / packet / pcap 的边界是“解析 vs 审计门禁”，且本项目以流记录表为第一类输入，解析层完全可选。解析层项目提供“能从抓包里读出什么”，MoonFlowGuard 提供“这份流量按策略能不能放行、有哪些安全与质量风险、如何导出报告”，两者互补而不重复。注册表全量核查无同用途实现。
+差异化结论（2026-08-17 全量注册表复查）：本项目与解析层的边界是“解析 vs 审计门禁”，且本项目以流记录表为第一类输入，解析层完全可选。解析层项目（usagi-star/mooncap：PCAP/PCAPNG 解析解码；chensuiyi/packet：Ethernet/IP/TCP/UDP 头解析；chensuiyi/pcap：抓包绑定；oyjh0381/moonipfix：IPFIX 流遥测协议解码；yhsrtty/moontls-parser：TLS ClientHello 解析与 JA3/JA4 指纹）提供“能从流量里读出什么”，MoonFlowGuard 提供“这份流量按策略能不能放行、有哪些安全与质量风险、如何导出报告”，两者互补而不重复。与策略引擎类项目 lllg123/moontrustflow（Policy-as-Code 程序数据流 source→sink 污点路径治理，处理 .mtf 模型与调用图，不处理网络流量）相比，两者只是“规则→Finding→严重级别”的表层形态相似，分析对象与输入完全不同。注册表（约 1,976 个包）全量核查无同用途实现；vectie/moonflow 为 Moon Suite 编排引擎，与本项目同名不同域，无功能重合。
 
 ## 原创或参考说明
 
-本项目为原创 MoonBit 项目，不直接移植其他语言项目源码。项目会参考公开协议规范（PCAP/PCAPNG、Ethernet、IPv4/IPv6、TCP/UDP、DNS 相关 RFC）和 Mooncakes 上已有项目的生态边界：usagi-star/mooncap 侧重纯 MoonBit PCAP/PCAPNG 离线解析与协议解码，chensuiyi/packet 侧重 Ethernet/IPv4/IPv6/TCP/UDP 头解析，chensuiyi/pcap 侧重抓包绑定；MoonFlowGuard 的差异化范围是输入无关的流量安全审计规则、风险评分、策略门禁和可执行报告，并声明可消费上述解析库作为解析后端。若后续复用或适配第三方测试样例，将在 README 和许可证说明中明确列出来源链接、许可证及参考范围。本项目采用 Apache License 2.0 作为开源许可证。
+本项目为原创 MoonBit 项目，不直接移植其他语言项目源码。项目会参考公开协议规范（PCAP/PCAPNG、Ethernet、IPv4/IPv6、TCP/UDP、DNS 相关 RFC）和 Mooncakes 上已有项目的生态边界：usagi-star/mooncap 侧重纯 MoonBit PCAP/PCAPNG 离线解析与协议解码，chensuiyi/packet 侧重 Ethernet/IPv4/IPv6/TCP/UDP 头解析，chensuiyi/pcap 侧重抓包绑定，oyjh0381/moonipfix 侧重 IPFIX 流遥测协议解码，yhsrtty/moontls-parser 侧重 TLS 指纹；MoonFlowGuard 的差异化范围是输入无关的流量安全审计规则、风险评分、策略门禁和可执行报告，并声明可消费上述解析库作为解析后端。若后续复用或适配第三方测试样例，将在 README 和许可证说明中明确列出来源链接、许可证及参考范围。本项目采用 Apache License 2.0 作为开源许可证。
