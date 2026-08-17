@@ -37,7 +37,7 @@ MoonFlowGuard 使用 MoonBit 实现一个输入无关的流量安全审计与策
 
 项目采用 MoonBit 作为主要实现语言，按 reader、protocols、container、flow、stats、filter、registry、flow_input、audit、gate、report、cli、tests 等模块组织代码。底层保留最小可验证的 PCAP/PCAPNG 与协议字段读取能力（仅为测试与示例服务，不追求通用解析器完整性）；输入层同时接受 CSV 流记录表与解码流量，证明审计与门禁逻辑与输入来源无关；中层生成五元组流、DNS 事件、端口/协议标签和统计证据；上层实现安全规则、风险评分、策略门禁、Finding 汇总、JSON/CSV/Text 报告和 CLI 输出。
 
-代码规模说明（如实申报）：项目总行数约 7,600 行，其中 well-known 端口注册表约 5,700 行由 tools/generate_registry.ps1 脚本生成，属静态数据而非算法；核心逻辑（解析与输入适配之外的 flow、analysis、audit、gate、report、cli）约 2,000 行。项目保留不少于 6 次 GitHub 提交记录，提供可实际运行的测试、示例和文档。
+代码规模说明（如实申报，按实测）：项目总行数约 8,100 行，其中 well-known 端口注册表约 5,700 行由 tools/generate_registry.ps1 脚本生成，属静态数据而非算法；解析与输入适配层（reader、protocols、container、flow_input）约 800 行；核心逻辑（解析与输入适配之外的 flow/analysis、audit、gate、report、cli）约 1,000 行。项目保留 11 次 GitHub 提交记录，提供可实际运行的测试、示例和文档。
 
 差异化结论：本项目与 mooncap / packet / pcap 的边界是“解析 vs 审计门禁”，且本项目以流记录表为第一类输入，解析层完全可选。解析层项目提供“能从抓包里读出什么”，MoonFlowGuard 提供“这份流量按策略能不能放行、有哪些安全与质量风险、如何导出报告”，两者互补而不重复。注册表全量核查无同用途实现。
 

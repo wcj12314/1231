@@ -155,10 +155,11 @@ MoonFlowGuard deliberately keeps generic protocol-parser completeness, packet
 mutation, live capture and TLS fingerprinting out of scope for the first
 version. Parser coverage exists only to support deterministic audit tests, and
 the flow-table input means a reviewer can gate traffic without any parser at
-all. The core logic (parsing excluded) is roughly 2,000 lines; the
-well-known-port registry is generated data produced by
-`tools/generate_registry.ps1`. The long-term goal is a reusable MoonBit rules
-engine for traffic security review, teaching labs, CI traffic gates and network
+all. Total code is roughly 8,100 lines, of which the well-known-port registry
+is about 5,700 generated data lines produced by `tools/generate_registry.ps1`;
+the audit/gate/report core, excluding the parsing layer and input adaptation,
+is roughly 1,000 lines. The long-term goal is a reusable MoonBit rules engine
+for traffic security review, teaching labs, CI traffic gates and network
 troubleshooting workflows.
 
 ## License
