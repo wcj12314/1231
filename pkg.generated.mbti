@@ -1,0 +1,364 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wcj12314/1231"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn analyze_decoded_packets(Array[DecodedPacket]) -> TrafficSummary
+
+pub fn analyze_records(Array[PacketRecord]) -> TrafficSummary
+
+pub fn apply_filter(Array[DecodedPacket], PacketFilter) -> Array[DecodedPacket]
+
+pub fn audit_decoded_packets(Array[DecodedPacket]) -> AuditReport
+
+pub fn audit_records(Array[PacketRecord]) -> AuditReport
+
+pub fn audit_to_json(AuditReport) -> String
+
+pub fn audit_to_text(AuditReport) -> String
+
+pub fn byte_hex(Int) -> String
+
+pub fn csv_escape(String) -> String
+
+pub fn decode_packet(PacketRecord) -> DecodedPacket raise ParseError
+
+pub fn decode_packets(Array[PacketRecord]) -> Array[DecodedPacket]
+
+pub fn dns_to_text(Array[DecodedPacket]) -> String
+
+pub fn dns_type_registered_name(Int) -> String
+
+pub fn ether_type_name(Int) -> String
+
+pub fn ether_type_registered_name(Int) -> String
+
+pub fn filter_packet(DecodedPacket, PacketFilter) -> Bool
+
+pub fn flow_key(DecodedPacket) -> FlowKey
+
+pub fn flow_label(FlowKey) -> String
+
+pub fn flows_to_csv(Array[FlowStats]) -> String
+
+pub fn imax(Int, Int) -> Int
+
+pub fn imin(Int, Int) -> Int
+
+pub fn ip_protocol_registered_name(Int) -> String
+
+pub fn ipv4_text(Reader, Int) -> String raise ParseError
+
+pub fn ipv6_text(Reader, Int) -> String raise ParseError
+
+pub fn join_strings(Array[String], String) -> String
+
+pub fn length_bucket(Int) -> String
+
+pub fn mac_to_string(MacAddress) -> String
+
+pub fn packet_filter(start_micros? : Int64?, end_micros? : Int64?, ip? : String?, port? : Int?, protocol? : Int?) -> PacketFilter
+
+pub fn parse_capture(Bytes) -> ParsedCapture raise ParseError
+
+pub fn parse_dns(Bytes) -> DnsMessage raise ParseError
+
+pub fn parse_ethernet(Bytes) -> EthernetFrame raise ParseError
+
+pub fn parse_icmp(Bytes) -> IcmpPacket raise ParseError
+
+pub fn parse_ipv4(Bytes) -> Ipv4Packet raise ParseError
+
+pub fn parse_ipv6(Bytes) -> Ipv6Packet raise ParseError
+
+pub fn parse_pcap(Bytes) -> ParsedCapture raise ParseError
+
+pub fn parse_pcapng(Bytes) -> ParsedCapture raise ParseError
+
+pub fn parse_tcp(Bytes) -> TcpSegment raise ParseError
+
+pub fn parse_udp(Bytes) -> UdpDatagram raise ParseError
+
+pub fn port_risk_tag(Int) -> String
+
+pub fn protocol_name(Int) -> String
+
+pub fn registered_service_name(Int) -> String
+
+pub fn sample_dns_pcap_fixture() -> Bytes
+
+pub fn sample_pcap_fixture() -> Bytes
+
+pub fn sample_pcapng_fixture() -> Bytes
+
+pub fn sample_tcp_pcap_fixture() -> Bytes
+
+pub fn severity_name(AuditSeverity) -> String
+
+pub fn summary_to_json(TrafficSummary) -> String
+
+pub fn summary_to_text(TrafficSummary) -> String
+
+pub fn tcp_flag_names(Int) -> String
+
+pub fn tcp_option_registered_name(Int) -> String
+
+pub fn top_flows(TrafficSummary, Int) -> Array[FlowStats]
+
+// Errors
+pub suberror ParseError {
+  Truncated(context~ : String, offset~ : Int, needed~ : Int, length~ : Int)
+  InvalidMagic(String)
+  InvalidHeader(String)
+}
+
+// Types and methods
+pub struct AuditFinding {
+  severity : AuditSeverity
+  rule_id : String
+  title : String
+  subject : String
+  evidence : String
+  recommendation : String
+} derive(Eq, @debug.Debug)
+
+pub struct AuditReport {
+  findings : Array[AuditFinding]
+  high : Int
+  medium : Int
+  low : Int
+  info : Int
+  risk_score : Int
+} derive(Eq, @debug.Debug)
+
+pub enum AuditSeverity {
+  Info
+  Low
+  Medium
+  High
+} derive(Eq, @debug.Debug)
+
+pub enum CaptureKind {
+  ClassicPcap(PcapHeader)
+  PcapNg(PcapNgSection)
+} derive(Eq, @debug.Debug)
+
+pub struct Counter {
+  name : String
+  count : Int
+} derive(Eq, @debug.Debug)
+
+pub struct DecodedPacket {
+  timestamp_micros : Int64
+  frame_length : Int
+  ether_type : Int
+  vlan_id : Int?
+  source_ip : String
+  destination_ip : String
+  protocol : Int
+  source_port : Int
+  destination_port : Int
+  tcp_flags : Int
+  tcp_sequence : Int
+  tcp_payload_length : Int
+  dns : DnsMessage?
+} derive(Eq, @debug.Debug)
+
+pub struct DnsMessage {
+  transaction_id : Int
+  is_response : Bool
+  opcode : Int
+  rcode : Int
+  question_count : Int
+  answer_count : Int
+  questions : Array[DnsQuestion]
+} derive(Eq, @debug.Debug)
+
+pub struct DnsQuestion {
+  name : String
+  qtype : Int
+  qclass : Int
+} derive(Eq, @debug.Debug)
+
+pub enum Endian {
+  Little
+  Big
+} derive(Eq, @debug.Debug)
+
+pub struct EthernetFrame {
+  destination : MacAddress
+  source : MacAddress
+  ether_type : Int
+  vlan_id : Int?
+  payload_offset : Int
+  payload_length : Int
+} derive(Eq, @debug.Debug)
+
+pub struct FlowKey {
+  source_ip : String
+  destination_ip : String
+  source_port : Int
+  destination_port : Int
+  protocol : Int
+} derive(Eq, @debug.Debug)
+
+pub struct FlowStats {
+  key : FlowKey
+  packets : Int
+  bytes : Int
+  upstream_packets : Int
+  downstream_packets : Int
+  first_seen : Int64
+  last_seen : Int64
+  tcp_syn : Int
+  tcp_fin : Int
+  tcp_rst : Int
+  last_tcp_sequence : Int
+  tcp_retransmissions : Int
+} derive(Eq, @debug.Debug)
+
+pub struct IcmpPacket {
+  icmp_type : Int
+  code : Int
+  checksum : Int
+} derive(Eq, @debug.Debug)
+
+pub struct IpAddress {
+  text : String
+  version : Int
+} derive(Eq, @debug.Debug)
+
+pub struct Ipv4Packet {
+  source : IpAddress
+  destination : IpAddress
+  protocol : Int
+  ttl : Int
+  total_length : Int
+  identification : Int
+  flags : Int
+  fragment_offset : Int
+  header_length : Int
+  payload_offset : Int
+  payload_length : Int
+} derive(Eq, @debug.Debug)
+
+pub struct Ipv6Packet {
+  source : IpAddress
+  destination : IpAddress
+  next_header : Int
+  hop_limit : Int
+  payload_length : Int
+  payload_offset : Int
+} derive(Eq, @debug.Debug)
+
+pub struct MacAddress {
+  b0 : Int
+  b1 : Int
+  b2 : Int
+  b3 : Int
+  b4 : Int
+  b5 : Int
+} derive(Eq, @debug.Debug)
+
+pub struct PacketFilter {
+  start_micros : Int64?
+  end_micros : Int64?
+  ip : String?
+  port : Int?
+  protocol : Int?
+} derive(Eq, @debug.Debug)
+
+pub struct PacketRecord {
+  timestamp_micros : Int64
+  captured_length : Int
+  original_length : Int
+  payload : Bytes
+} derive(Eq, @debug.Debug)
+
+pub struct ParsedCapture {
+  kind : CaptureKind
+  packets : Array[PacketRecord]
+  interfaces : Array[PcapNgInterface]
+} derive(Eq, @debug.Debug)
+
+pub struct PcapHeader {
+  endian : Endian
+  version_major : Int
+  version_minor : Int
+  thiszone : Int
+  sigfigs : Int
+  snaplen : Int
+  network : Int
+  nanos : Bool
+} derive(Eq, @debug.Debug)
+
+pub struct PcapNgInterface {
+  link_type : Int
+  snaplen : Int
+} derive(Eq, @debug.Debug)
+
+pub struct PcapNgSection {
+  endian : Endian
+  major : Int
+  minor : Int
+  section_length : Int64
+} derive(Eq, @debug.Debug)
+
+pub struct Reader {
+  data : Bytes
+  endian : Endian
+} derive(@debug.Debug)
+pub fn Reader::length(Self) -> Int
+pub fn Reader::new(Bytes, endian? : Endian) -> Self
+pub fn Reader::slice(Self, Int, Int, String) -> Bytes raise ParseError
+pub fn Reader::u16(Self, Int) -> Int raise ParseError
+pub fn Reader::u16_be(Self, Int) -> Int raise ParseError
+pub fn Reader::u16_le(Self, Int) -> Int raise ParseError
+pub fn Reader::u32(Self, Int) -> Int raise ParseError
+pub fn Reader::u32_be(Self, Int) -> Int raise ParseError
+pub fn Reader::u32_le(Self, Int) -> Int raise ParseError
+pub fn Reader::u64_parts(Self, Int) -> (Int, Int) raise ParseError
+pub fn Reader::u8(Self, Int) -> Int raise ParseError
+
+pub struct TcpSegment {
+  source_port : Int
+  destination_port : Int
+  sequence : Int
+  acknowledgement : Int
+  data_offset : Int
+  flags : Int
+  window : Int
+  payload_offset : Int
+  payload_length : Int
+} derive(Eq, @debug.Debug)
+
+pub struct TrafficSummary {
+  packets : Int
+  bytes : Int
+  ipv4_packets : Int
+  ipv6_packets : Int
+  tcp_packets : Int
+  udp_packets : Int
+  icmp_packets : Int
+  dns_messages : Int
+  flows : Array[FlowStats]
+  top_ips : Array[Counter]
+  top_ports : Array[Counter]
+  length_buckets : Array[Counter]
+} derive(Eq, @debug.Debug)
+
+pub struct UdpDatagram {
+  source_port : Int
+  destination_port : Int
+  length : Int
+  checksum : Int
+  payload_offset : Int
+  payload_length : Int
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

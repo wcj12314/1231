@@ -235,3 +235,31 @@ pub struct PacketFilter {
   port : Int?
   protocol : Int?
 } derive(Debug, Eq)
+
+///|
+pub enum AuditSeverity {
+  Info
+  Low
+  Medium
+  High
+} derive(Debug, Eq)
+
+///|
+pub struct AuditFinding {
+  severity : AuditSeverity
+  rule_id : String
+  title : String
+  subject : String
+  evidence : String
+  recommendation : String
+} derive(Debug, Eq)
+
+///|
+pub struct AuditReport {
+  findings : Array[AuditFinding]
+  high : Int
+  medium : Int
+  low : Int
+  info : Int
+  risk_score : Int
+} derive(Debug, Eq)

@@ -74,3 +74,14 @@ test "filters select by ip port and protocol" {
   let by_tcp = apply_filter(packets, packet_filter(protocol=Some(6)))
   @test.assert_eq(by_tcp.length(), 0)
 }
+
+///|
+test "audit report flags cleartext service" {
+  let capture = try! parse_capture(sample_dns_pcap_fixture())
+  let packets = decode_packets(capture.packets)
+  let report = audit_decoded_packets(packets)
+  assert_true(report.findings.length() > 0)
+  let text = audit_to_text(report)
+  assert_true(text.contains("DNS-CLEARTEXT-METADATA"))
+  assert_true(text.contains("example.com"))
+}

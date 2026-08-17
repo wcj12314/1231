@@ -19,6 +19,8 @@ jobs:
           moon run cmd/main -- summary
           moon run cmd/main -- flows
           moon run cmd/main -- dns
+          moon run cmd/main -- audit
           moon run cmd/main -- filter
           moon run cmd/main -- export json
           moon run cmd/main -- export csv
+          moon run cmd/main -- export audit

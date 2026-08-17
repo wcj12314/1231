@@ -9,6 +9,8 @@ fn main {
     "summary" => println(@pcap.summary_to_text(summary))
     "flows" => println(@pcap.flows_to_csv(@pcap.top_flows(summary, 20)))
     "dns" => println(@pcap.dns_to_text(packets))
+    "audit" =>
+      println(@pcap.audit_to_text(@pcap.audit_decoded_packets(packets)))
     "filter" => {
       let filtered = @pcap.apply_filter(
         packets,
@@ -20,12 +22,14 @@ fn main {
       let format = if args.length() > 2 { args[2] } else { "json" }
       match format {
         "csv" => println(@pcap.flows_to_csv(@pcap.top_flows(summary, 20)))
+        "audit" =>
+          println(@pcap.audit_to_json(@pcap.audit_decoded_packets(packets)))
         _ => println(@pcap.summary_to_json(summary))
       }
     }
     _ =>
       println(
-        "MoonPCAP commands: summary | flows | dns | filter | export [json|csv]",
+        "MoonTraceGuard commands: summary | flows | dns | audit | filter | export [json|csv|audit]",
       )
   }
 }
