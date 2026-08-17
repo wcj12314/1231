@@ -119,7 +119,7 @@ lengths. The PCAPNG fixture validates SHB, IDB and EPB block parsing.
 MoonTraceGuard deliberately keeps generic protocol-parser completeness, packet
 mutation, live capture and TLS fingerprinting out of scope for the first
 version. Parser coverage exists only to support deterministic audit tests. The
-core logic (parsing excluded) is roughly 1,800 lines; the well-known-port
+core logic (parsing excluded) is roughly 2,000 lines; the well-known-port
 registry is generated data produced by `tools/generate_registry.ps1`. The
 long-term goal is a reusable MoonBit rules engine for packet-capture security
 review, teaching labs, CI capture gates and network troubleshooting workflows.
