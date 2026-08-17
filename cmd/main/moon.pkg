@@ -1,6 +1,6 @@
 import {
   "moonbitlang/core/env",
-  "wcj12314/1231" @pcap,
+  "wcj12314/moon-trace-guard" @guard,
 }
 
 pkgtype(kind: "executable")

@@ -75,6 +75,23 @@ fn is_dns_unusual_question(question : DnsQuestion) -> Bool {
 }
 
 ///|
+/// A deeply nested name or a very long single label over UDP/53 is a shape
+/// consistent with DNS tunneling. Returns the offending shape as evidence, or
+/// `None` when the name looks ordinary.
+fn dns_tunnel_shape(question : DnsQuestion) -> String? {
+  let labels = question.name.split(".")
+  if labels.length() >= 8 {
+    return Some("label_count=\{labels.length()}")
+  }
+  for label in labels {
+    if label.length() > 30 {
+      return Some("max_label_length=\{label.length()}")
+    }
+  }
+  None
+}
+
+///|
 fn audit_packet(findings : Array[AuditFinding], packet : DecodedPacket) -> Unit {
   if packet.protocol == 17 &&
     (packet.source_port == 53 || packet.destination_port == 53) {
@@ -99,6 +116,19 @@ fn audit_packet(findings : Array[AuditFinding], packet : DecodedPacket) -> Unit 
             "qtype=\{dns_type_registered_name(question.qtype)}, qclass=\{question.qclass}, rcode=\{dns.rcode}",
             "Review whether this query is expected; unusually long names and ANY queries are often useful triage signals.",
           )
+        }
+        match dns_tunnel_shape(question) {
+          Some(shape) =>
+            push_finding(
+              findings,
+              Low,
+              "DNS-TUNNEL-SHAPE",
+              "DNS name shape is consistent with tunneling",
+              question.name,
+              shape,
+              "Deeply nested names or very long labels over UDP/53 can indicate DNS tunneling; validate the client behavior.",
+            )
+          None => ()
         }
       }
     } else {
@@ -175,6 +205,17 @@ fn audit_flow(findings : Array[AuditFinding], flow : FlowStats) -> Unit {
       flow_label(flow.key),
       "retransmissions=\{flow.tcp_retransmissions}, packets=\{flow.packets}",
       "Use this as a capture-quality and network-health signal, not as a full TCP reassembly verdict.",
+    )
+  }
+  if flow.tcp_syn >= 3 && flow.tcp_syn == flow.packets {
+    push_finding(
+      findings,
+      Medium,
+      "SYN-BURST-NO-COMPLETION",
+      "Flow consists only of repeated SYN segments",
+      flow_label(flow.key),
+      "syn=\{flow.tcp_syn}, packets=\{flow.packets}, rst=\{flow.tcp_rst}",
+      "A flow where every segment is a SYN may indicate a scan or connection flood; verify against application behavior.",
     )
   }
 }

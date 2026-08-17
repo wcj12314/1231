@@ -85,3 +85,125 @@ test "audit report flags cleartext service" {
   assert_true(text.contains("DNS-CLEARTEXT-METADATA"))
   assert_true(text.contains("example.com"))
 }
+
+///|
+fn synthetic_tcp(
+  source_port : Int,
+  destination_port : Int,
+  flags : Int,
+) -> DecodedPacket {
+  DecodedPacket::{
+    timestamp_micros: 0L,
+    frame_length: 60,
+    ether_type: 0x0800,
+    vlan_id: None,
+    source_ip: "192.168.1.1",
+    destination_ip: "192.168.1.2",
+    protocol: 6,
+    source_port,
+    destination_port,
+    tcp_flags: flags,
+    tcp_sequence: 100,
+    tcp_payload_length: 0,
+    dns: None,
+  }
+}
+
+///|
+fn has_rule(report : AuditReport, rule_id : String) -> Bool {
+  for finding in report.findings {
+    if finding.rule_id == rule_id {
+      return true
+    }
+  }
+  false
+}
+
+///|
+test "gate passes a clean capture under default policy" {
+  let result = gate_capture([synthetic_tcp(12345, 443, 0x02)], default_policy())
+  assert_true(result.verdict is Pass)
+  @test.assert_eq(gate_to_text(result).contains("PASS"), true)
+}
+
+///|
+test "gate fails when a sensitive service is exposed" {
+  let result = gate_capture(
+    [synthetic_tcp(12345, 3306, 0x18)],
+    default_policy(),
+  )
+  assert_true(result.verdict is Fail)
+  assert_true(gate_to_text(result).contains("SENSITIVE-SERVICE-EXPOSURE"))
+}
+
+///|
+test "gate honors a custom max_risk_score policy" {
+  let capture = try! parse_capture(sample_dns_pcap_fixture())
+  let packets = decode_packets(capture.packets)
+  let strict = AuditPolicy::{
+    max_risk_score: 0,
+    max_high: 0,
+    max_medium: 0,
+    max_low: 0,
+    deny_rule_ids: [],
+  }
+  let result = gate_capture(packets, strict)
+  assert_true(result.verdict is Fail)
+  assert_true(gate_to_text(result).contains("RISK-SCORE"))
+}
+
+///|
+test "policy json parsing fills defaults" {
+  let policy = parse_policy_json(
+    "{\"max_risk_score\": 5, \"deny_rule_ids\": [\"DNS-CLEARTEXT-METADATA\"]}",
+  )
+  @test.assert_eq(policy.max_risk_score, 5)
+  @test.assert_eq(policy.max_high, default_policy().max_high)
+  @test.assert_eq(policy.deny_rule_ids.length(), 1)
+  @test.assert_eq(policy.deny_rule_ids[0], "DNS-CLEARTEXT-METADATA")
+  let bad = parse_policy_json("not json")
+  @test.assert_eq(bad.max_risk_score, default_policy().max_risk_score)
+}
+
+///|
+test "syn burst rule flags scan-like flow" {
+  let packets = [
+    synthetic_tcp(12345, 22, 0x02),
+    synthetic_tcp(12345, 22, 0x02),
+    synthetic_tcp(12345, 22, 0x02),
+  ]
+  let report = audit_decoded_packets(packets)
+  assert_true(has_rule(report, "SYN-BURST-NO-COMPLETION"))
+}
+
+///|
+test "dns tunnel shape rule flags deep name" {
+  let dns = DnsMessage::{
+    transaction_id: 1,
+    is_response: false,
+    opcode: 0,
+    rcode: 0,
+    question_count: 1,
+    answer_count: 0,
+    questions: [
+      DnsQuestion::{ name: "a.b.c.d.e.f.g.h.example.com", qtype: 16, qclass: 1 },
+    ],
+  }
+  let packet = DecodedPacket::{
+    timestamp_micros: 0L,
+    frame_length: 60,
+    ether_type: 0x0800,
+    vlan_id: None,
+    source_ip: "192.168.1.1",
+    destination_ip: "8.8.8.8",
+    protocol: 17,
+    source_port: 49153,
+    destination_port: 53,
+    tcp_flags: 0,
+    tcp_sequence: 0,
+    tcp_payload_length: 0,
+    dns: Some(dns),
+  }
+  let report = audit_decoded_packets([packet])
+  assert_true(has_rule(report, "DNS-TUNNEL-SHAPE"))
+}

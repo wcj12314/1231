@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "wcj12314/1231"
+package "wcj12314/moon-trace-guard"
 
 import {
   "moonbitlang/core/debug",
@@ -28,6 +28,8 @@ pub fn decode_packet(PacketRecord) -> DecodedPacket raise ParseError
 
 pub fn decode_packets(Array[PacketRecord]) -> Array[DecodedPacket]
 
+pub fn default_policy() -> AuditPolicy
+
 pub fn dns_to_text(Array[DecodedPacket]) -> String
 
 pub fn dns_type_registered_name(Int) -> String
@@ -36,6 +38,8 @@ pub fn ether_type_name(Int) -> String
 
 pub fn ether_type_registered_name(Int) -> String
 
+pub fn evaluate_policy(AuditReport, AuditPolicy) -> GateResult
+
 pub fn filter_packet(DecodedPacket, PacketFilter) -> Bool
 
 pub fn flow_key(DecodedPacket) -> FlowKey
@@ -43,6 +47,14 @@ pub fn flow_key(DecodedPacket) -> FlowKey
 pub fn flow_label(FlowKey) -> String
 
 pub fn flows_to_csv(Array[FlowStats]) -> String
+
+pub fn gate_capture(Array[DecodedPacket], AuditPolicy) -> GateResult
+
+pub fn gate_records(Array[PacketRecord], AuditPolicy) -> GateResult
+
+pub fn gate_to_json(GateResult) -> String
+
+pub fn gate_to_text(GateResult) -> String
 
 pub fn imax(Int, Int) -> Int
 
@@ -78,9 +90,13 @@ pub fn parse_pcap(Bytes) -> ParsedCapture raise ParseError
 
 pub fn parse_pcapng(Bytes) -> ParsedCapture raise ParseError
 
+pub fn parse_policy_json(String) -> AuditPolicy
+
 pub fn parse_tcp(Bytes) -> TcpSegment raise ParseError
 
 pub fn parse_udp(Bytes) -> UdpDatagram raise ParseError
+
+pub fn policy_to_json(AuditPolicy) -> String
 
 pub fn port_risk_tag(Int) -> String
 
@@ -108,6 +124,8 @@ pub fn tcp_option_registered_name(Int) -> String
 
 pub fn top_flows(TrafficSummary, Int) -> Array[FlowStats]
 
+pub fn verdict_name(GateVerdict) -> String
+
 // Errors
 pub suberror ParseError {
   Truncated(context~ : String, offset~ : Int, needed~ : Int, length~ : Int)
@@ -123,6 +141,14 @@ pub struct AuditFinding {
   subject : String
   evidence : String
   recommendation : String
+} derive(Eq, @debug.Debug)
+
+pub struct AuditPolicy {
+  max_risk_score : Int
+  max_high : Int
+  max_medium : Int
+  max_low : Int
+  deny_rule_ids : Array[String]
 } derive(Eq, @debug.Debug)
 
 pub struct AuditReport {
@@ -218,6 +244,28 @@ pub struct FlowStats {
   tcp_rst : Int
   last_tcp_sequence : Int
   tcp_retransmissions : Int
+} derive(Eq, @debug.Debug)
+
+pub struct GateResult {
+  verdict : GateVerdict
+  risk_score : Int
+  high : Int
+  medium : Int
+  low : Int
+  info : Int
+  findings : Array[AuditFinding]
+  violations : Array[GateViolation]
+} derive(Eq, @debug.Debug)
+
+pub enum GateVerdict {
+  Pass
+  Review
+  Fail
+} derive(Eq, @debug.Debug)
+
+pub struct GateViolation {
+  rule_id : String
+  reason : String
 } derive(Eq, @debug.Debug)
 
 pub struct IcmpPacket {

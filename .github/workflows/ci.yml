@@ -1,4 +1,4 @@
-name: MoonPCAP CI
+name: MoonTraceGuard CI
 
 on:
   push:
@@ -20,7 +20,17 @@ jobs:
           moon run cmd/main -- flows
           moon run cmd/main -- dns
           moon run cmd/main -- audit
+          moon run cmd/main -- gate
+          moon run cmd/main -- policy
           moon run cmd/main -- filter
           moon run cmd/main -- export json
           moon run cmd/main -- export csv
           moon run cmd/main -- export audit
+      - name: Gate must fail under a strict policy
+        run: |
+          if moon run cmd/main -- gate '{"max_risk_score": 0}' > /tmp/gate.out 2>&1; then
+            echo "gate unexpectedly passed for a strict policy"
+            cat /tmp/gate.out
+            exit 1
+          fi
+          cat /tmp/gate.out
